@@ -7,10 +7,13 @@ import { TileMap } from "./tileMap.js";
 
 const THEMES: Theme[] = ["ambient", "telemetry", "focus"];
 
-function initialZoom(radiusMiles: number): number {
-  // Target: radiusMiles ≈ 250px on a ~1000px screen (equatorial Mercator approximation).
-  // 2^z = (250 * 40075000) / (radiusMiles * 1609.34 * 256) ≈ 24300 / radiusMiles
-  return Math.max(8, Math.min(16, Math.round(Math.log2(24300 / radiusMiles))));
+function initialZoom(radiusMiles: number, lat: number, halfScreenPx: number): number {
+  // Solve for z such that radiusMiles maps to halfScreenPx pixels.
+  // pixels_per_mile = 2^z * 256 / (24901 * cos(lat))
+  // halfScreenPx = radiusMiles * pixels_per_mile
+  const cosLat = Math.cos((lat * Math.PI) / 180);
+  const z = Math.log2((halfScreenPx * 24901 * cosLat) / (radiusMiles * 256));
+  return Math.max(4, Math.min(16, Math.round(z)));
 }
 
 export function MapDisplay() {
@@ -31,13 +34,18 @@ export function MapDisplay() {
     centeredRef.current = true;
     tm.centerLat = state.config.centerLat;
     tm.centerLon = state.config.centerLon;
-    tm.zoom = initialZoom(state.config.radiusMiles);
+    const canvas = canvasRef.current;
+    const halfPx = canvas
+      ? Math.min(canvas.clientWidth, canvas.clientHeight) / 2
+      : Math.min(window.innerWidth, window.innerHeight) / 2;
+    tm.zoom = initialZoom(state.config.radiusMiles, state.config.centerLat, halfPx);
   }, [state.config]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
     const cfg = configRef.current;
-    const zoom = initialZoom(cfg.radiusMiles);
+    const halfPx = Math.min(window.innerWidth, window.innerHeight) / 2;
+    const zoom = initialZoom(cfg.radiusMiles, cfg.centerLat, halfPx);
 
     const tm = new TileMap(canvasRef.current, cfg.centerLat, cfg.centerLon, zoom, () => {});
     tileMapRef.current = tm;
