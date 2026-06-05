@@ -142,6 +142,14 @@ export class Poller {
     this.o.source = source;
     this.status.source = source;
   }
+  setPollMs(ms: number): void {
+    if (this.o.pollMs === ms) return;
+    this.o.pollMs = ms;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = setInterval(() => void this.tick(), ms);
+    }
+  }
 
   start(): void {
     if (this.timer) return;

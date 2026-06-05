@@ -174,6 +174,21 @@ export function Control() {
           </Row>
         </Section>
 
+        <Section title="Data Source">
+          <Row label="Source">
+            <Segmented value={cfg.dataSource}
+              options={[
+                { value: "radio", label: "Radio" },
+                { value: "api", label: "API" },
+              ]}
+              onChange={(v) => set({ dataSource: v })} />
+          </Row>
+          <Row label="Poll interval" hint="ms between fetches (min 2000 for API only)">
+            <NumberInput value={cfg.pollMs} min={500} max={30000} step={500}
+              onChange={(v) => set({ pollMs: v })} />
+          </Row>
+        </Section>
+
         <Section title="Motion">
           <Row label="Interpolate">
             <Toggle value={cfg.interpolate} onChange={(v) => set({ interpolate: v })} />

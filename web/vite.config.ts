@@ -25,6 +25,7 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, "index.html"),
         control: resolve(__dirname, "control.html"),
+        map: resolve(__dirname, "map.html"),
       },
     },
   },

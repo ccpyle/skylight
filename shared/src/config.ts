@@ -59,6 +59,9 @@ export interface Config {
   maxAltitudeFt: number;
   hideOnGround: boolean;
 
+  dataSource: "api",
+  pollMs: 2000,
+
   // --- motion ---
   /** Display interpolation toggle (server poll cadence is separate). */
   interpolate: boolean;

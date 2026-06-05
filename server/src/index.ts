@@ -55,16 +55,22 @@ async function main(): Promise<void> {
   });
 
   const poller = new Poller({
-    source: SOURCE,
+    source: store.get().dataSource,
     radioUrl: RADIO_URL,
     apiUrlTemplate: API_URL,
-    pollMs: POLL_MS,
+    pollMs: store.get().pollMs,
     supplementApi: SUPPLEMENT_API,
     apiPollMs: API_POLL_MS,
     getConfig: () => store.get(),
     enricher,
     onSnapshot: (now, aircraft) => hub.broadcastAircraft(now, aircraft),
     onStatus: (status) => hub.broadcastStatus(status),
+  });
+
+  // Keep poller in sync when source or poll interval is changed via the UI.
+  store.subscribe((cfg) => {
+    poller.setSource(cfg.dataSource);
+    poller.setPollMs(cfg.pollMs);
   });
 
   // --- REST API (handy for debugging + non-WS clients) ---
@@ -100,8 +106,9 @@ async function main(): Promise<void> {
   poller.start();
 
   server.listen(PORT, HOST, () => {
+    const { dataSource, pollMs } = store.get();
     console.log(`[server] listening on http://${HOST}:${PORT}`);
-    console.log(`[server] data source: ${SOURCE} (${SOURCE === "radio" ? RADIO_URL : API_URL})`);
+    console.log(`[server] data source: ${dataSource} @ ${pollMs}ms (${dataSource === "radio" ? RADIO_URL : API_URL})`);
     console.log(`[server] control panel: http://<this-host>:${PORT}/control`);
   });
 }
