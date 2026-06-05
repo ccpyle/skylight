@@ -24,6 +24,11 @@ interface RawAircraft {
   t?: string;
   seen?: number;
   rssi?: number;
+  // possible operator/owning company keys from various APIs
+  ownOp?: string;
+  own_op?: string;
+  operator?: string;
+  owner?: string;
 }
 
 function normalize(raw: RawAircraft, ts: number): Aircraft | null {
@@ -46,6 +51,7 @@ function normalize(raw: RawAircraft, ts: number): Aircraft | null {
     typeCode: raw.t,
     seen: raw.seen,
     rssi: raw.rssi,
+    ownOp: (raw as any).ownOp ?? (raw as any).own_op ?? (raw as any).operator ?? (raw as any).owner ?? undefined,
     ts,
   };
 }
@@ -111,6 +117,7 @@ interface StickyEnrichment {
   destLat?: number;
   destLon?: number;
   lastSeen: number;
+  ownOp?: string;
 }
 
 export class Poller {
@@ -258,6 +265,7 @@ export class Poller {
     ac.originLon = ac.originLon ?? prev?.originLon;
     ac.destLat = ac.destLat ?? prev?.destLat;
     ac.destLon = ac.destLon ?? prev?.destLon;
+    ac.ownOp = ac.ownOp ?? prev?.ownOp;
     this.sticky.set(ac.hex, {
       typeName: ac.typeName,
       airline: ac.airline,
@@ -270,6 +278,7 @@ export class Poller {
       originLon: ac.originLon,
       destLat: ac.destLat,
       destLon: ac.destLon,
+      ownOp: ac.ownOp,
       lastSeen: now,
     });
   }
