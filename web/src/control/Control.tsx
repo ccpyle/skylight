@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Config, ShowFields } from "@shared/index.js";
 import { useStream } from "../lib/useStream.js";
 import { nextISSPass, type Tle } from "../display/celestial.js";
-import { ColorRow, Row, Section, Segmented, Slider, Toggle } from "./components.js";
+import { ColorRow, Row, Section, Segmented, Slider, Toggle, NumberInput } from "./components.js";
 
 function skyTimeLabel(offsetMin: number): string {
   if (offsetMin === 0) return "live";
@@ -25,6 +25,7 @@ const FIELD_LABELS: Record<keyof ShowFields, string> = {
   verticalRate: "Vert. rate",
   destination: "Destination",
   registration: "Registration",
+  ownOp: "Operator",
 };
 
 export function Control() {
@@ -38,7 +39,7 @@ export function Control() {
     fetch("/api/tle")
       .then((r) => (r.ok ? r.json() : []))
       .then((t) => on && setTles(t as Tle[]))
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       on = false;
     };
@@ -74,6 +75,20 @@ export function Control() {
       </header>
 
       <main>
+        <Section title="Location">
+          <Row label="Center latitude">
+            <NumberInput value={cfg.centerLat} min={-90} max={90} step={0.0001}
+              onChange={(v) => set({ centerLat: v })} />
+          </Row>
+          <Row label="Center longitude">
+            <NumberInput value={cfg.centerLon} min={-180} max={180} step={0.0001}
+              onChange={(v) => set({ centerLon: v })} />
+          </Row>
+          <Row label="Radius">
+            <Slider value={cfg.radiusMiles} min={1} max={40} step={1} unit="mi"
+              onChange={(v) => set({ radiusMiles: v })} />
+          </Row>
+        </Section>
         <Section title="Calibration">
           <Row label="Rotation" hint="align field to ceiling">
             <Slider value={cfg.rotationDeg} min={0} max={355} step={5} unit="°"
@@ -88,10 +103,6 @@ export function Control() {
           <Row label="Label rotation" hint="text only, not the map">
             <Slider value={cfg.labelRotationDeg} min={0} max={355} step={5} unit="°"
               onChange={(v) => set({ labelRotationDeg: v })} />
-          </Row>
-          <Row label="Radius">
-            <Slider value={cfg.radiusMiles} min={0.5} max={10} step={0.5} unit="mi"
-              onChange={(v) => set({ radiusMiles: v })} />
           </Row>
         </Section>
 

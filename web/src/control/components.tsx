@@ -109,3 +109,32 @@ export function ColorRow({
     </label>
   );
 }
+
+export function NumberInput({
+  value,
+  min,
+  max,
+  step = 0.01,
+  placeholder,
+  onChange,
+}: {
+  value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <input
+      type="number"
+      value={value}
+      min={min}
+      max={max}
+      step={step}
+      placeholder={placeholder}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="number-input"
+    />
+  );
+}

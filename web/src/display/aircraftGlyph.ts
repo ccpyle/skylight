@@ -11,7 +11,8 @@ export type GlyphKind =
   | "airliner"
   | "widebody"
   | "quadjet"
-  | "helicopter";
+  | "helicopter"
+  | "military";
 
 // Relative size per kind (multiplies the configured glyph size).
 export const GLYPH_SCALE: Record<GlyphKind, number> = {
@@ -21,6 +22,7 @@ export const GLYPH_SCALE: Record<GlyphKind, number> = {
   widebody: 1.3,
   quadjet: 1.46,
   helicopter: 0.82,
+  military: 1.0,
 };
 
 const HELI = new Set([
@@ -54,6 +56,10 @@ const LIGHT = new Set([
   "BE19", "BE23", "BE24", "M20P", "M20T", "AA1", "AA5", "GLAS", "COL4", "RV4",
   "RV6", "RV7", "RV8", "RV9", "RV10", "RV14", "GA8", "G115", "BL8", "CH7", "SF50",
 ]);
+const MILITARY = new Set([
+  "F16", "F18", "F15", "F22", "F35", "FA18", "A10",
+  "MIG29", "SU27", "SU30", "J10", "J11", "F4", "F14", "T38", "F5",
+]);
 
 export function classifyGlyph(ac: Aircraft): GlyphKind {
   const code = (ac.typeCode || "").toUpperCase();
@@ -63,6 +69,7 @@ export function classifyGlyph(ac: Aircraft): GlyphKind {
   if (WIDE.has(code) || cat === "A5") return "widebody";
   if (TPROP.has(code)) return "turboprop";
   if (LIGHT.has(code) || cat === "A1") return "light";
+  if (MILITARY.has(code) || cat === "A6") return "military";
   return "airliner";
 }
 
@@ -121,6 +128,22 @@ export function drawAircraftGlyph(
       // Tail rotor (small, fast) then main rotor (large, over the body).
       propDisc(ctx, 0.04 * s, 1.18 * s, 0.22 * s, color, alpha, t * 16 + seed, false, 2);
       mainRotor(ctx, s, color, alpha, t * 6 + seed);
+      break;
+    case "military":
+      militaryBody(ctx, s);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // Subtle rear exhaust glow for visual separation.
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = `rgba(255,160,100,${0.12 * alpha})`;
+      ctx.beginPath();
+      ctx.ellipse(0, 0.6 * s, 0.12 * s, 0.04 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      // Small engine/weapon pods for silhouette detail
+      fillAndEngines(ctx, s, color, alpha, [0.28]);
+      core(ctx, s, alpha, 0.08);
       break;
     case "airliner":
     default:
@@ -310,4 +333,43 @@ function core(ctx: CanvasRenderingContext2D, s: number, alpha: number, r: number
   ctx.beginPath();
   ctx.arc(0, 0, s * r, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function militaryBody(ctx: CanvasRenderingContext2D, s: number): void {
+  ctx.beginPath();
+  // Longer, sharper nose
+  ctx.moveTo(0, -1.12 * s);
+
+  // Canards (small forward surfaces)
+  ctx.moveTo(-0.08 * s, -0.42 * s);
+  ctx.lineTo(-0.22 * s, -0.28 * s);
+  ctx.lineTo(-0.06 * s, -0.28 * s);
+  ctx.closePath();
+  ctx.moveTo(0.08 * s, -0.42 * s);
+  ctx.lineTo(0.22 * s, -0.28 * s);
+  ctx.lineTo(0.06 * s, -0.28 * s);
+  ctx.closePath();
+
+  // Fuselage and delta-like wings
+  ctx.moveTo(0, -1.12 * s);
+  ctx.lineTo(-0.26 * s, -0.18 * s);
+  ctx.lineTo(-0.48 * s, 0.18 * s);
+  ctx.lineTo(-0.32 * s, 0.36 * s);
+  ctx.lineTo(-0.12 * s, 0.12 * s);
+  ctx.lineTo(0.12 * s, 0.12 * s);
+  ctx.lineTo(0.32 * s, 0.36 * s);
+  ctx.lineTo(0.48 * s, 0.18 * s);
+  ctx.lineTo(0.26 * s, -0.18 * s);
+  ctx.closePath();
+
+  // Twin canted tails
+  ctx.moveTo(-0.12 * s, 0.12 * s);
+  ctx.lineTo(-0.18 * s, 0.56 * s);
+  ctx.lineTo(-0.08 * s, 0.56 * s);
+  ctx.closePath();
+
+  ctx.moveTo(0.12 * s, 0.12 * s);
+  ctx.lineTo(0.08 * s, 0.56 * s);
+  ctx.lineTo(0.18 * s, 0.56 * s);
+  ctx.closePath();
 }

@@ -1,0 +1,78 @@
+:root {
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  background: #191a2e;
+  overflow: hidden;
+}
+.map-root {
+  position: fixed;
+  inset: 0;
+}
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+.map-canvas:active {
+  cursor: grabbing;
+}
+.hud {
+  position: fixed;
+  top: 10px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 12px/1.2 "JetBrains Mono", ui-monospace, monospace;
+  color: #c9cdd6;
+  background: rgba(10, 12, 16, 0.7);
+  padding: 6px 10px;
+  border-radius: 6px;
+  pointer-events: none;
+}
+.hud-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.hud-dot.ok {
+  background: #4ade80;
+}
+.hud-dot.bad {
+  background: #e0533d;
+}
+.reconnect {
+  position: fixed;
+  bottom: 28px;
+  right: 16px;
+  font: 12px "JetBrains Mono", ui-monospace, monospace;
+  color: #6b7280;
+  pointer-events: none;
+}
+.map-attribution {
+  position: fixed;
+  bottom: 6px;
+  right: 8px;
+  font: 10px/1.4 sans-serif;
+  color: rgba(200, 200, 200, 0.6);
+  pointer-events: auto;
+}
+.map-attribution a {
+  color: inherit;
+  text-decoration: none;
+}
+.map-attribution a:hover {
+  text-decoration: underline;
+}

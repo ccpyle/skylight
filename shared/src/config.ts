@@ -33,6 +33,8 @@ export interface ShowFields {
   verticalRate: boolean;
   destination: boolean;
   registration: boolean;
+  /** Show operator / owning company. */
+  ownOp: boolean;
 }
 
 export interface Config {
@@ -113,9 +115,9 @@ export interface Config {
 export const DEFAULT_CONFIG: Config = {
   // Default center: San Francisco International (SFO). Set this to your own
   // location — ideally where you'll be looking up at the ceiling.
-  centerLat: 37.6213,
-  centerLon: -122.379,
-  radiusMiles: 3,
+  centerLat: 30.2385,
+  centerLon: -85.9149,
+  radiusMiles: 30,
 
   rotationDeg: 0,
   mirrorX: true,
@@ -162,6 +164,7 @@ export const DEFAULT_CONFIG: Config = {
     verticalRate: false,
     destination: true,
     registration: false,
+    ownOp: true,
   },
 
   rangeRings: true,

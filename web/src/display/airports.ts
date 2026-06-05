@@ -26,5 +26,33 @@ export const SFO: Airport = {
   ],
 };
 
+export const ATL: Airport = {
+  icao: "KATL",
+  name: "ATL",
+  runways: [
+    { leIdent: "8L", heIdent: "26R", le: [33.649543, -84.439071], he: [33.649546, -84.409492], widthFt: 200 },
+    { leIdent: "8R", heIdent: "26L", le: [33.646794, -84.438362], he: [33.646806, -84.405530], widthFt: 200 },
+    { leIdent: "9L", heIdent: "27R", le: [33.634718, -84.447963], he: [33.634730, -84.407283], widthFt: 200 },
+    { leIdent: "9R", heIdent: "27L", le: [33.631827, -84.447974], he: [33.631827, -84.418452], widthFt: 200 },
+  ],
+};
+
+export const VPS: Airport = {
+  icao: "KVPS",
+  name: "VPS",
+  runways: [
+    { leIdent: "20", heIdent: "2", le: [30.5010768, -86.510793], he: [30.4709103, -86.518372], widthFt: 150 },
+    { leIdent: "12", heIdent: "30", le: [30.4887647, -86.552243], he: [30.471095, -86.516366], widthFt: 150 },
+  ],
+};
+
+export const ECP: Airport = {
+  icao: "KECP",
+  name: "ECP",
+  runways: [
+    { leIdent: "16", heIdent: "34", le: [30.37107, -85.80114], he: [30.345766, -85.79016], widthFt: 200 },
+  ],
+};
+
 /** Airports drawn on the map (currently just SFO; easy to extend). */
-export const AIRPORTS: Airport[] = [SFO];
+export const AIRPORTS: Airport[] = [ECP, ATL, VPS];
