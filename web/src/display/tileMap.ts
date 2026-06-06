@@ -98,10 +98,10 @@ export class TileMap {
         } else if (curr.length === 2 && prevTouches.length === 2) {
           const prevD = Math.hypot(prevTouches[0].x - prevTouches[1].x, prevTouches[0].y - prevTouches[1].y);
           const currD = Math.hypot(curr[0].x - curr[1].x, curr[0].y - curr[1].y);
-          const cx = (curr[0].x + curr[1].x) / 2;
-          const cy = (curr[0].y + curr[1].y) / 2;
-          if (currD > prevD * 1.4) this.zoomAt(1, cx, cy);
-          else if (currD < prevD / 1.4) this.zoomAt(-1, cx, cy);
+          const rect = el.getBoundingClientRect();
+          const cx = (curr[0].x + curr[1].x) / 2 - rect.left;
+          const cy = (curr[0].y + curr[1].y) / 2 - rect.top;
+          if (prevD > 0) this.zoomAt(Math.log2(currD / prevD), cx, cy);
         }
         prevTouches = curr;
       },
@@ -146,29 +146,32 @@ export class TileMap {
   }
 
   drawTiles(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-    const z = this.zoom;
-    const tileCount = Math.pow(2, z);
-    const { gx: cGx, gy: cGy } = latLonToGlobalPx(this.centerLat, this.centerLon, z);
+    // Fetch tiles at the nearest integer zoom; scale them to the visual fractional zoom
+    // so pinch zoom is continuous rather than snapping at integer boundaries.
+    const tileZoom = Math.round(this.zoom);
+    const tileCount = Math.pow(2, tileZoom);
+    const tileSize = TILE_SIZE * Math.pow(2, this.zoom - tileZoom);
+    const { gx: cGx, gy: cGy } = latLonToGlobalPx(this.centerLat, this.centerLon, this.zoom);
     const ox = cGx - w / 2;
     const oy = cGy - h / 2;
 
-    const minTX = Math.floor(ox / TILE_SIZE);
-    const minTY = Math.floor(oy / TILE_SIZE);
-    const maxTX = Math.ceil((ox + w) / TILE_SIZE);
-    const maxTY = Math.ceil((oy + h) / TILE_SIZE);
+    const minTX = Math.floor(ox / tileSize);
+    const minTY = Math.floor(oy / tileSize);
+    const maxTX = Math.ceil((ox + w) / tileSize);
+    const maxTY = Math.ceil((oy + h) / tileSize);
 
     for (let ty = minTY; ty <= maxTY; ty++) {
       if (ty < 0 || ty >= tileCount) continue;
       for (let tx = minTX; tx <= maxTX; tx++) {
         const wtx = ((tx % tileCount) + tileCount) % tileCount;
-        const sx = Math.round(tx * TILE_SIZE - ox);
-        const sy = Math.round(ty * TILE_SIZE - oy);
-        const key = `${z}/${wtx}/${ty}`;
+        const sx = tx * tileSize - ox;
+        const sy = ty * tileSize - oy;
+        const key = `${tileZoom}/${wtx}/${ty}`;
         const val = this.cache.get(key);
         if (val instanceof HTMLImageElement) {
-          ctx.drawImage(val, sx, sy, TILE_SIZE, TILE_SIZE);
+          ctx.drawImage(val, sx, sy, tileSize, tileSize);
         } else if (val !== "loading" && val !== "error") {
-          this.fetchTile(key, z, wtx, ty);
+          this.fetchTile(key, tileZoom, wtx, ty);
         }
       }
     }

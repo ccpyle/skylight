@@ -24,6 +24,7 @@ body,
   height: 100%;
   display: block;
   cursor: grab;
+  touch-action: none;
 }
 .map-canvas:active {
   cursor: grabbing;
