@@ -23,11 +23,11 @@ body,
   width: 100%;
   height: 100%;
   display: block;
-  cursor: grab;
+  cursor: none;
   touch-action: none;
 }
 .map-canvas:active {
-  cursor: grabbing;
+  cursor: none;
 }
 .hud {
   position: fixed;
