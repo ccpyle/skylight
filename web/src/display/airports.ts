@@ -54,5 +54,13 @@ export const ECP: Airport = {
   ],
 };
 
+export const DTS: Airport = {
+  icao: "KDTS",
+  name: "DTS",
+  runways: [
+    { leIdent: "18", heIdent: "32", le: [30.405928, -86.47672], he: [30.39464, -86.4666], widthFt: 200 },
+  ],
+};
+
 /** Airports drawn on the map (currently just SFO; easy to extend). */
-export const AIRPORTS: Airport[] = [ECP, ATL, VPS];
+export const AIRPORTS: Airport[] = [ECP, ATL, VPS, DTS, SFO];
