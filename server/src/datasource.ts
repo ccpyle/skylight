@@ -59,7 +59,15 @@ function normalize(raw: RawAircraft, ts: number): Aircraft | null {
 const NM_PER_MILE = 0.868976;
 
 async function fetchJson(url: string): Promise<any> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(5000),
+    headers: {
+      // api.airplanes.live (Cloudflare) returns 403 for the default Node
+      // "node" User-Agent — identify as a browser so the request goes through.
+      "User-Agent": "Mozilla/5.0 (compatible; skylight/1.0)",
+      Accept: "application/json",
+    },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
@@ -210,6 +218,10 @@ export class Poller {
     if (primary === null) {
       this.status = { ...this.status, ok: false, message: "source fetch failed" };
       this.o.onStatus(this.status);
+      // Re-broadcast the last known snapshot with a fresh timestamp so a single
+      // failed poll (e.g. reading aircraft.json mid-rewrite) doesn't freeze
+      // every client-side track and trigger the stale-fade on all glyphs.
+      this.o.onSnapshot(now, this.last);
       return;
     }
     const supplement = this.o.source === "radio" && this.o.supplementApi;

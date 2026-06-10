@@ -639,7 +639,8 @@ export class MapRenderer {
     const anchorY = Math.max(box.y, Math.min(v.py, box.y + h));
 
     ctx.save();
-    ctx.strokeStyle = rgba(hexToRgb(cfg.palette.text), 0.24 * a);
+    // Line from label to glyph
+    ctx.strokeStyle = rgba(hexToRgb(cfg.palette.text), 0.8 * a * cfg.brightness);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(v.px, v.py);

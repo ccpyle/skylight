@@ -47,7 +47,7 @@ export function MapDisplay() {
     const halfPx = Math.min(window.innerWidth, window.innerHeight) / 2;
     const zoom = initialZoom(cfg.radiusMiles, cfg.centerLat, halfPx);
 
-    const tm = new TileMap(canvasRef.current, cfg.centerLat, cfg.centerLon, zoom, () => {});
+    const tm = new TileMap(canvasRef.current, cfg.centerLat, cfg.centerLon, zoom, () => { });
     tileMapRef.current = tm;
 
     const r = new MapRenderer(canvasRef.current, () => configRef.current, tm);
@@ -113,10 +113,10 @@ export function MapDisplay() {
         </div>
       )}
       {!state.connected && <div className="reconnect">connecting…</div>}
-      <div className="map-attribution">
+      {/* <div className="map-attribution">
         © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>{" "}
         © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>
-      </div>
+      </div> */}
     </div>
   );
 }
