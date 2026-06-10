@@ -131,8 +131,8 @@ export const DEFAULT_CONFIG: Config = {
   maxAltitudeFt: 60000,
   hideOnGround: true,
 
-  dataSource: api;
-  pollMs: 2000;
+  dataSource: "api",
+  pollMs: 2000,
 
   interpolate: true,
   maxExtrapolationSec: 5,
